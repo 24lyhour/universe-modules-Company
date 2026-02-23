@@ -29,6 +29,29 @@ class CompanyServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
+        $this->registerMenuItems();
+    }
+
+    /**
+     * Register menu items for the Company module.
+     */
+    protected function registerMenuItems(): void
+    {
+        $this->app->booted(function () {
+            \App\Services\MenuService::addMenuItem(
+                menu: 'primary',
+                id: 'company',
+                title: __('Company'),
+                url: '/dashboard/company',
+                icon: 'Building2',
+                order: 90,
+                permissions: 'companies.view_any',
+                route: 'company.*'
+            );
+
+            \App\Services\MenuService::addSubmenuItem('primary', 'company', __('All Companies'), '/dashboard/company', 10, 'companies.view_any', 'company.index', 'List');
+            \App\Services\MenuService::addSubmenuItem('primary', 'company', __('Create Company'), '/dashboard/company/create', 20, 'companies.create', 'company.create', 'Plus');
+        });
     }
 
     /**
